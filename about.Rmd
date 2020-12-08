@@ -1,0 +1,7 @@
+---
+title: "about"
+output: html_document
+---
+About the Website
+
+This website focusses on the problem of Mass Incarcelation in th United States of America.A number of data variables presented here were examined using R to derive meaningful trends. 
