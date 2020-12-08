@@ -6,20 +6,113 @@ output: html_document
 
 ## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Introduction
+This report focuses on the incarceration of the black population in the United States. Mass incarceration refers to the imprisonment of large number of people in government correctional facilities.The US incarcerates more people than any other nation on the globe. This report takes into consideration the Alabama state marked as AL in the dataset columns. 
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Variables Considered
+This report takes into consideration three variables from the dataset documentation cookbook. These variables are;
+- black_prison_pop: Represents the total number of black inmates in the Federal prisons in  different years according to the states and counties with the states.
+- white_prison_pop: Represents the total number of white inmates in the Federal prisons in  different years according to the states and counties with the states.
+- total_prison_adm_rate: The rate of admission for new prisoners in the Federal Correctional Facilities.
 
-```{r cars}
-summary(cars)
+
+
+Relevant values of interest (black_prison_pop for Alabama State between 1990-2015)
+Median - 85
+Mean - 233.6
+Maximum - 3917.0
+Minimum - 0
+
+Note that these values of interest are limited to the Alabama State only.
+
+Question 1: Trends Over Time Chart
+
+```{r pressure, echo=FALSE}
+##question 1 : Trends Over Time Chart 
+
+# Load ggplot2
+library("ggplot2")
+
+
+#load data from the csv file ans store in a variable
+trends <- read.csv("incarceration_trends.csv")
+
+trends
+
+#all the data was loaded to the trends variables. 
+#we extract the data we want only and continue to plotting the graph
+#here, we use the subset function to extract the data we from the dataset
+data <- subset(trends, state== "AL" & year>1990)
+
+#now we extract the two data variables that we need to compare
+mainData<- data.frame(year= data$year,
+                      black_prisoners = data$black_prison_pop,
+                      white_prisoners = data$white_prison_pop,
+                      prison_admission = data$total_prison_adm_rate
+                      )
+#set the new data frame as the head
+head(mainData)
+
+# Line plot in ggplot2 with groups
+mainData %>% gather(key = "Legends", value = "Prison_Population", -year) %>%
+  ggplot(aes(x = year, y = Prison_Population, color = Legends), ggtitle("Black Vs White Incarceration")) +
+  geom_smooth(method = 'lm') +
+  scale_color_manual(values = c("tomato3","goldenrod","skyblue2"))
+
+
+
+```
+
+
+Question 2: Black Prisoners Population vs Time in Years
+
+```{r pressure, echo=FALSE}
+##question 2 : Variable Comparison Chart 
+library(usmap)
+library(ggplot2)
+
+
+# Load ggplot2
+library("ggplot2")
+
+
+#load data from the csv file ans store in a variable
+trends <- read.csv("incarceration_trends.csv")
+
+
+trends
+
+#all the data was loaded to the trends variables. 
+#we extract the data we want only and continue to plotting the graph
+#here, we use the subset function to extract the data we from the dataset
+data <- subset(trends, state== "AL" & year>1990)
+
+head(data)
+
+plot(data$year, data$black_prison_pop, type= 'l', 
+     ylab='Black Prison Population', xlab = 'Years',main = 'Population of Incarcerated Black People in AL State from 1990 - 2015')
+
+
+
+
 ```
 
 ## Including Plots
 
-You can also embed plots, for example:
+Question 3: Geographic Distribution Map
 
 ```{r pressure, echo=FALSE}
-plot(pressure)
+##question 3 : Geographic Distribution Map 
+library(usmap)
+library(ggplot2)
+plot_usmap(data3, values = "black_prison_pop",  color = "orange", labels=FALSE) + 
+  scale_fill_continuous( low = "white", high = "orange", 
+                         name = "Density", label = scales::comma
+  ) + 
+  theme(legend.position = "right") + 
+  theme(panel.background = element_rect(colour = "black")) + 
+  labs(title = "Incarcelation of Black People Across the United States of America",caption= "Date Range : 2005-2015")
+
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
